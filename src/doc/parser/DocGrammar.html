@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for DocGrammar.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for DocGrammar.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+" "
+| "\r"
+| "\t"
+| "\n"
+| "#" : PREPROCESSOR_DIRECTIVE
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;POINTER_STARS: ("*")+&gt;
+| &lt;DOT: "."&gt;
+| &lt;COLON: ":"&gt;
+| &lt;SEMICOLON: ";"&gt;
+| &lt;TILDE: "~"&gt;
+| &lt;COMMA: ","&gt;
+| &lt;CLASS: "class"&gt;
+| &lt;FRIEND: "friend"&gt;
+| &lt;PRIVATE: "private"&gt;
+| &lt;PROTECTED: "protected"&gt;
+| &lt;PUBLIC: "public"&gt;
+| &lt;CONST: "const"&gt;
+| &lt;STATIC: "static"&gt;
+| &lt;VIRTUAL: "virtual"&gt;
+| &lt;LEFT_PARENTHESIS: "("&gt;
+| &lt;RIGHT_PARENTHESIS: ")"&gt;
+| &lt;START_COMMENT: "/*"&gt; : IN_COMMENT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")&gt;
+| &lt;IDENTIFIER: (["A"-"Z"] | ["a"-"z"] | "_") (&lt;ALPHANUM&gt; | "_" | "::")*&gt;
+| &lt;OPERATOR_DEF: "operator" ("+" | "-" | "*" | "/" | "||" | "&amp;&amp;")?&gt;
+| &lt;DESTRUCTOR_DEF: &lt;TILDE&gt; &lt;IDENTIFIER&gt;&gt;
+| &lt;ALPHANUM: (["0"-"9"] | ["A"-"Z"] | ["a"-"z"])+&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_COMMENT&gt; SKIP : {
+" "
+| "\t"
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_COMMENT&gt; TOKEN : {
+&lt;SHARP: "#"&gt;
+| &lt;SEPARATOR: "&gt;"&gt;
+| &lt;ATTRIBUTE_DEF: "@" (["0"-"9"] | ["A"-"Z"] | ["a"-"z"] | "_")+ " "&gt;
+| &lt;EMAIL_LINK: (&lt;ALPHANUM&gt; | "_" | ".")+ "@" (&lt;ALPHANUM&gt; | "_" | ".")+&gt;
+| &lt;WEB_LINK: "http://" (&lt;ALPHANUM&gt; | "_" | ":" | "/" | "." | "%" | "?" | "=")+&gt;
+| &lt;FREE_TEXT: (&lt;ALPHANUM&gt; | "\u00e0" | "\u00e9" | "\u00e8" | "\u00ec" | "\u00f2" | "\u00f9" | "_" | "-" | "." | "," | "?" | ":" | ";" | "!" | "\'")+&gt;
+| &lt;STAR: "*"&gt;
+| &lt;END_LINE: "\n" | "\r" | "\r\n"&gt;
+| &lt;END_COMMENT: "*/"&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;PREPROCESSOR_DIRECTIVE&gt; SKIP : {
+"\n" : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;PREPROCESSOR_DIRECTIVE&gt; MORE : {
+"\\\n"
+| "\\\r\n"
+| &lt;~[]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">header_files</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">documented_class</A> )+</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">documented_class</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod3">comments</A> <A HREF="#prod4">class_declaration</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">comments</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;SINGLE_LINE_COMMENT&gt; | <A HREF="#prod5">multi_line_comment</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">multi_line_comment</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;START_COMMENT&gt; ( ( &lt;STAR&gt; )* ( &lt;ATTRIBUTE_DEF&gt; ( <A HREF="#prod6">text_element</A> )+ | ( <A HREF="#prod6">text_element</A> )* ) ( &lt;END_LINE&gt; | &lt;END_COMMENT&gt; ) )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">text_element</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;FREE_TEXT&gt; | &lt;EMAIL_LINK&gt; | &lt;WEB_LINK&gt; | <A HREF="#prod7">class_reference</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">class_reference</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;SHARP&gt; &lt;FREE_TEXT&gt; ( &lt;SEPARATOR&gt; &lt;FREE_TEXT&gt; )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">class_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CLASS&gt; &lt;IDENTIFIER&gt; ( <A HREF="#prod8">parent_class</A> )? "{" <A HREF="#prod9">members_declaration</A> "}" ( &lt;SEMICOLON&gt; )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">parent_class</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>":" &lt;IDENTIFIER&gt; ( "," &lt;IDENTIFIER&gt; )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">members_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod10">visibility_attribute</A> &lt;COLON&gt; | <A HREF="#prod11">documented_member</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">visibility_attribute</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"public"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"private"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"protected"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">documented_member</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod3">comments</A> )? ( <A HREF="#prod12">destructor_declaration</A> | <A HREF="#prod13">friend_class_declaration</A> | <A HREF="#prod14">constructor_declaration</A> | <A HREF="#prod15">typed_declaration</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">friend_class_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FRIEND&gt; &lt;CLASS&gt; &lt;IDENTIFIER&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">typed_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;STATIC&gt; )? ( &lt;CONST&gt; )? <A HREF="#prod16">data_type</A> ( <A HREF="#prod17">operator_declaration</A> | &lt;IDENTIFIER&gt; ( <A HREF="#prod18">function_declaration</A> | <A HREF="#prod19">data_declaration</A> ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">constructor_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; &lt;LEFT_PARENTHESIS&gt; ( <A HREF="#prod20">arguments_list</A> )? &lt;RIGHT_PARENTHESIS&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">destructor_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DESTRUCTOR_DEF&gt; "(" ")" ";"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">operator_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;OPERATOR_DEF&gt; ( &lt;CONST&gt; )? &lt;LEFT_PARENTHESIS&gt; ( <A HREF="#prod20">arguments_list</A> )? &lt;RIGHT_PARENTHESIS&gt; &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">function_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFT_PARENTHESIS&gt; ( <A HREF="#prod20">arguments_list</A> )? &lt;RIGHT_PARENTHESIS&gt; ( &lt;CONST&gt; )? &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">data_declaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( "[" ( &lt;ALPHANUM&gt; | &lt;IDENTIFIER&gt; ) "]" )* &lt;SEMICOLON&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">data_type</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt; ( "&lt;" &lt;IDENTIFIER&gt; "&gt;" )? ( &lt;POINTER_STARS&gt; )? ( "&amp;" )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">arguments_list</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod21">argument</A> ( "," <A HREF="#prod21">argument</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">argument</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;CONST&gt; )? <A HREF="#prod16">data_type</A> &lt;IDENTIFIER&gt;</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
